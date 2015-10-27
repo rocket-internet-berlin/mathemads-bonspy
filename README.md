@@ -1,6 +1,102 @@
 # Bonspy
 
-## Example
+## Sklearn logistic regression classifier to Bonsai example
+
+    from bonspy.logistic import LogisticConverter
+
+    features = ['segment', 'age', 'geo']
+
+    vocabulary = {
+        'segment=12345': 0,
+        'segment=67890': 1,
+        'age=0': 2,
+        'age=1': 3,
+        'geo=UK': 4,
+        'geo=DE': 5,
+        'geo=US': 6,
+        'geo=BR': 7
+    }
+
+    weights = [.1, .2, .15, .25, .1, .1, .2, .2]
+    intercept = .4
+
+    buckets = {
+        'age': {
+            '0': (None, 10),
+            '1': (10, None)
+        }
+    }
+
+    types = {
+        'segment': 'assignment',
+        'age': 'range',
+        'geo': 'assignment'
+    }
+
+    conv = LogisticConverter(features=features, vocabulary=vocabulary,
+                             weights=weights, intercept=intercept,
+                             types=types, base_bid=2., buckets=buckets)
+
+    tree = BonsaiTree(conv.graph)
+
+    print(tree.bonsai)
+
+Prints out
+
+    if segment 67890:
+        if segment 67890 age <= 10:
+            if geo=UK:
+                1.4011
+            elif geo=BR:
+                1.4422
+            elif geo=DE:
+                1.4011
+            elif geo=US:
+                1.4422
+            else:
+                1.3584
+        elif segment 67890 age > 10:
+            if geo=UK:
+                1.4422
+            elif geo=BR:
+                1.4815
+            elif geo=DE:
+                1.4422
+            elif geo=US:
+                1.4815
+            else:
+                1.4011
+        else:
+            1.2913
+    elif segment 12345:
+        if segment 12345 age > 10:
+            if geo=DE:
+                1.4011
+            elif geo=US:
+                1.4422
+            elif geo=UK:
+                1.4011
+            elif geo=BR:
+                1.4422
+            else:
+                1.3584
+        elif segment 12345 age <= 10:
+            if geo=DE:
+                1.3584
+            elif geo=US:
+                1.4011
+            elif geo=UK:
+                1.3584
+            elif geo=BR:
+                1.4011
+            else:
+                1.3140
+        else:
+            1.2449
+    else:
+        1.1974
+
+## NetworkX tree to Bonsai example
 
     import networkx as nx
 
