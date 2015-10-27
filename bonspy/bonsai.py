@@ -125,6 +125,7 @@ class BonsaiTree(nx.DiGraph):
         elif type_ == 'assignment':
             comparison = ' ' if feature in ['segment'] else '='
 
+            value = '"{}"'.format(value) if isinstance(value, str) else value
             out = '{indent}{conditional} {feature}{comparison}{value}:\n'.format(indent=indent,
                                                                                  conditional=conditional,
                                                                                  feature=feature,
