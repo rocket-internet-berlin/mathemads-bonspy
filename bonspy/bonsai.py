@@ -124,8 +124,8 @@ class BonsaiTree(nx.DiGraph):
                                                                          value=value)
         elif type_ == 'assignment':
             comparison = ' ' if feature in ['segment'] else '='
+            value = '"{}"'.format(value) if not self.is_numerical(value) else value
 
-            value = '"{}"'.format(value) if isinstance(value, str) else value
             out = '{indent}{conditional} {feature}{comparison}{value}:\n'.format(indent=indent,
                                                                                  conditional=conditional,
                                                                                  feature=feature,
@@ -156,3 +156,12 @@ class BonsaiTree(nx.DiGraph):
             out_text = self._get_output_text(child)
 
             yield conditional_text + out_text
+
+    @staticmethod
+    def is_numerical(x):
+        try:
+            _ = int(x)
+            _ = float(x)
+            return True
+        except ValueError:
+            return False
