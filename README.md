@@ -1,5 +1,8 @@
 # Bonspy
 
+This package was developed and tested on Python 3.5 -
+Python 2.7 (and below) compatibility has not been tested.
+
 ## Sklearn logistic regression classifier to Bonsai example
 
     from bonspy.logistic import LogisticConverter
