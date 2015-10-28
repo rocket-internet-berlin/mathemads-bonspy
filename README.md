@@ -1,5 +1,8 @@
 # Bonspy
 
+This package was developed and tested on Python 3.5 -
+Python 2.7 (and below) compatibility has not been tested.
+
 ## Sklearn logistic regression classifier to Bonsai example
 
     from bonspy.logistic import LogisticConverter
@@ -44,50 +47,50 @@
 Prints out
 
     if segment 67890:
-        if segment 67890 age <= 10:
-            if geo=UK:
-                1.4011
-            elif geo=BR:
+        if segment 67890 age > 10:
+            if geo="US":
+                1.4815
+            elif geo="UK":
                 1.4422
-            elif geo=DE:
-                1.4011
-            elif geo=US:
+            elif geo="BR":
+                1.4815
+            elif geo="DE":
                 1.4422
+            else:
+                1.4011
+        elif segment 67890 age <= 10:
+            if geo="US":
+                1.4422
+            elif geo="UK":
+                1.4011
+            elif geo="BR":
+                1.4422
+            elif geo="DE":
+                1.4011
             else:
                 1.3584
-        elif segment 67890 age > 10:
-            if geo=UK:
-                1.4422
-            elif geo=BR:
-                1.4815
-            elif geo=DE:
-                1.4422
-            elif geo=US:
-                1.4815
-            else:
-                1.4011
         else:
             1.2913
     elif segment 12345:
         if segment 12345 age > 10:
-            if geo=DE:
-                1.4011
-            elif geo=US:
+            if geo="US":
                 1.4422
-            elif geo=UK:
+            elif geo="DE":
                 1.4011
-            elif geo=BR:
+            elif geo="UK":
+                1.4011
+            elif geo="BR":
                 1.4422
             else:
                 1.3584
         elif segment 12345 age <= 10:
-            if geo=DE:
-                1.3584
-            elif geo=US:
+            if geo="US":
                 1.4011
-            elif geo=UK:
+            elif geo="DE":
                 1.3584
-            elif geo=BR:
+            elif geo="UK":
+                1.3584
+            elif geo="BR":
                 1.4011
             else:
                 1.3140
