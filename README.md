@@ -1,7 +1,17 @@
 # Bonspy
 
-This package was developed and tested on Python 3.5 -
-Python 2.7 (and below) compatibility has not been tested.
+Bonspy converts bidding trees from various input formats to the
+[Bonsai bidding language of AppNexus](http://blog.appnexus.com/2015/introducing-appnexus-programmable-bidder/).
+
+As intermediate format bonspy constructs a [NetworkX](https://networkx.github.io/) graph from which it produces the
+Bonsai language output.
+Bidding trees may also be constructed directly in this NetworkX format (see second example below).
+
+At present bonspy provides a converter from trained [sklearn](http://scikit-learn.org/stable/) logistic regression
+classifiers with categorical, one-hot encoded features to the intermediate NetworkX format (see first example below).
+
+This package was developed and tested on Python 3.5.
+However, the examples below have been tested successfully in Python 2.7.
 
 ## Sklearn logistic regression classifier to Bonsai example
 
