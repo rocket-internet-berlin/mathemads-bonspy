@@ -6,6 +6,7 @@ Python 2.7 (and below) compatibility has not been tested.
 ## Sklearn logistic regression classifier to Bonsai example
 
     from bonspy.logistic import LogisticConverter
+    from bonspy.bonsai import BonsaiTree
 
     features = ['segment', 'age', 'geo']
 
