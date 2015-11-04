@@ -13,5 +13,8 @@ setup(
     version='0.0.1',
     description='Library that converts bidding trees to the AppNexus Bonsai language.',
     authors=['Alexander Volkmann', 'Georg Walther'],
-    license='3-Clause BSD'
+    license='3-Clause BSD',
+    packages=['bonspy'],
+    package_dir={'bonspy': 'bonspy'},
+    url='https://github.com/mathemads/bonspy'
 )
