@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import (
-    print_function, division, generators,
-    absolute_import, unicode_literals
-)
-
 try:
     from setuptools import setup
 except ImportError:
