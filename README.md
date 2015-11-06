@@ -17,7 +17,7 @@ However, the examples below have been tested successfully in Python 2.7.
 
     import networkx as nx
 
-    from bonspy.bonsai import BonsaiTree
+    from bonspy import BonsaiTree
     
     
     g = nx.DiGraph()
@@ -122,8 +122,8 @@ prints out
 
 ## Example: Sklearn logistic regression classifier to Bonsai output
 
-    from bonspy.logistic import LogisticConverter
-    from bonspy.bonsai import BonsaiTree
+    from bonspy import LogisticConverter
+    from bonspy import BonsaiTree
 
     features = ['segment', 'age', 'geo']
 
@@ -216,3 +216,47 @@ Prints out
             1.2449
     else:
         1.1974
+
+## Example: Uploading the Bonsai output to AppNexus
+
+Base64-encode the tree:
+
+    import base64
+    encoded = base64.b64encode(tree.bonsai)
+
+Use our [`nexusadspy` library](https://github.com/mathemads/nexusadspy) to
+send the `check_tree` dictionary to the AppNexus tree parser and check
+for any syntactical errors in the `tree`:
+
+    from nexusadspy import AppnexusClient
+    client = AppnexusClient('.appnexus_auth.json')
+
+    check_tree = {
+                   "custom-model-parser": {
+                        "model_text": encoded
+                        }
+                   }
+
+    r = client.request('custom-model-parser', 'POST', data=check_tree)
+
+If the AppNexus API does not return an error for our `tree` we can now
+upload it as follows:
+
+    custom_model ={
+                    "custom_model": {
+                        "name": "Insert tree name (visible in the AppNexus advertiser UI)",
+                        "member_id":  # add your integer member ID,
+                        "advertiser_id": # add your integer advertiser ID,
+                        "custom_model_structure": "decision_tree",
+                        "model_output": "bid",
+                        "model_text": encoded
+                        }
+                    }
+
+    r = client.request('custom-model', 'POST', data=custom_model)
+
+Check the response `r` for the integer identifier assigned to your bidding tree by AppNexus.
+You will use this identifier to set the uploaded tree as bidding tree for your advertising
+campaigns in the AppNexus advertiser UI.
+
+For more details see https://wiki.appnexus.com/display/console/AppNexus+Programmable+Bidder.

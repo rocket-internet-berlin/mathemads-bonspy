@@ -9,6 +9,17 @@ import networkx as nx
 
 
 class BonsaiTree(nx.DiGraph):
+    """
+    A NetworkX DiGraph (directed graph) subclass that knows how to print
+    itself out in the AppNexus Bonsai bidding tree language.
+
+    See the readme for the expected graph structure:
+
+    https://github.com/mathemads/bonspy
+
+    The Bonsai text representation of this tree is stored in its `bonsai` attribute.
+    """
+
     def __init__(self, graph=None):
         if graph is not None:
             super(BonsaiTree, self).__init__(graph)
@@ -124,7 +135,7 @@ class BonsaiTree(nx.DiGraph):
                                                                          value=value)
         elif type_ == 'assignment':
             comparison = ' ' if feature in ['segment'] else '='
-            value = '"{}"'.format(value) if not self.is_numerical(value) else value
+            value = '"{}"'.format(value) if not self._is_numerical(value) else value
 
             out = '{indent}{conditional} {feature}{comparison}{value}:\n'.format(indent=indent,
                                                                                  conditional=conditional,
@@ -158,7 +169,7 @@ class BonsaiTree(nx.DiGraph):
             yield conditional_text + out_text
 
     @staticmethod
-    def is_numerical(x):
+    def _is_numerical(x):
         try:
             _ = int(x)
             _ = float(x)
