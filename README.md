@@ -225,8 +225,8 @@ Base64-encode the tree:
     encoded = base64.b64encode(tree.bonsai)
 
 Use our [`nexusadspy` library](https://github.com/mathemads/nexusadspy) to
-send the `check_tree` dictionary to the AppNexus tree parser and check
-for any syntactical errors in the `tree`:
+send the encoded `tree` to the AppNexus parser and check
+for any syntactical errors:
 
     from nexusadspy import AppnexusClient
     client = AppnexusClient('.appnexus_auth.json')
@@ -256,7 +256,7 @@ upload it as follows:
     r = client.request('custom-model', 'POST', data=custom_model)
 
 Check the response `r` for the integer identifier assigned to your bidding tree by AppNexus.
-You will use this identifier to set the uploaded tree as bidding tree for your advertising
+You will use this identifier to set the uploaded tree as bidder for your advertising
 campaigns in the AppNexus advertiser UI.
 
 For more details see https://wiki.appnexus.com/display/console/AppNexus+Programmable+Bidder.
