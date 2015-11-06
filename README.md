@@ -239,10 +239,10 @@ for any syntactical errors:
 
     r = client.request('custom-model-parser', 'POST', data=check_tree)
 
-If the AppNexus API does not return an error for our `tree` we can now
+If the AppNexus API does not return any errors for our `tree` we can now
 upload it as follows:
 
-    custom_model ={
+    custom_model = {
                     "custom_model": {
                         "name": "Insert tree name (visible in the AppNexus advertiser UI)",
                         "member_id":  # add your integer member ID,
