@@ -12,6 +12,21 @@ import networkx as nx
 
 
 class LogisticConverter():
+    """
+    Converter that translates a trained sklearn logistic regression classifier
+    with one-hot-encoded, categorical features to a NetworkX graph that can
+    be output to Bonsai with the `bonspy.BonsaiTree` converter.
+
+    Attributes:
+        features (list): List of feature names.
+        vocabulary (dict): `vocabulary_` attribute of your trained `DictVectorizer` (http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.DictVectorizer.html)
+        weights (list): `coef_` attribute of your trained `SGDClassifier(loss='log', ...)` (http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html)
+        intercept (float): `intercept_` attribute of your trained `SGDClassifier(loss='log', ...)`
+        types (dict): Variable assignment type definitions: 'assignment', 'range', or membership.
+        base_bid (float): Constant value that the output of the trained classifier is multiplied with to produce the output (bid).
+        buckets (dict): Optional. Map for range features from bucket ID's to their bounds.
+    """
+
     def __init__(self, features, vocabulary, weights, intercept, types, base_bid,
                  buckets=None):
 
