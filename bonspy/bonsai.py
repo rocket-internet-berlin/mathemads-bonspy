@@ -9,6 +9,17 @@ import networkx as nx
 
 
 class BonsaiTree(nx.DiGraph):
+    """
+    A NetworkX DiGraph (directed graph) subclass that knows how to print
+    itself out in the AppNexus Bonsai bidding tree language.
+
+    See the readme for the expected graph structure:
+
+    https://github.com/mathemads/bonspy
+
+    The Bonsai text representation of this tree is stored in its `bonsai` attribute.
+    """
+
     def __init__(self, graph=None):
         if graph is not None:
             super(BonsaiTree, self).__init__(graph)
