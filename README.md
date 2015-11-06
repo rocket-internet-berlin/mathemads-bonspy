@@ -17,7 +17,7 @@ However, the examples below have been tested successfully in Python 2.7.
 
     import networkx as nx
 
-    from bonspy.bonsai import BonsaiTree
+    from bonspy import BonsaiTree
     
     
     g = nx.DiGraph()
@@ -122,8 +122,8 @@ prints out
 
 ## Example: Sklearn logistic regression classifier to Bonsai output
 
-    from bonspy.logistic import LogisticConverter
-    from bonspy.bonsai import BonsaiTree
+    from bonspy import LogisticConverter
+    from bonspy import BonsaiTree
 
     features = ['segment', 'age', 'geo']
 
