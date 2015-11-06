@@ -10,6 +10,9 @@ Bidding trees may also be constructed directly in this NetworkX format (see firs
 At present bonspy provides a converter from trained [sklearn](http://scikit-learn.org/stable/) logistic regression
 classifiers with categorical, one-hot encoded features to the intermediate NetworkX format (see second example below).
 
+In combination with our AppNexus API wrapper [`nexusadspy`](https://github.com/mathemads/nexusadspy) it is also
+straightforward to check your bidding tree for syntactical errors and upload it for real-time bidding (third example below).
+
 This package was developed and tested on Python 3.5.
 However, the examples below have been tested successfully in Python 2.7.
 
