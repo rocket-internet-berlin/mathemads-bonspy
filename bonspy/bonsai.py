@@ -129,6 +129,8 @@ class BonsaiTree(nx.DiGraph):
 
         elif type_ == 'membership':
             value = tuple(value)
+            if type(value[0]) == str:
+                value = self._tuple_of_strings_to_input(value)
             out = '{indent}{conditional} {feature} in {value}:\n'.format(indent=indent,
                                                                          conditional=conditional,
                                                                          feature=feature,
@@ -176,3 +178,13 @@ class BonsaiTree(nx.DiGraph):
             return True
         except ValueError:
             return False
+
+    @staticmethod
+    def _tuple_of_strings_to_input(tuple_):
+        n = len(tuple_)
+        D = dict(zip(range(n), tuple_))
+        string = '('
+        for i in range(n-1):
+            string += '\"{}\",'.format(D[i])
+        string += '\"{}\")'.format(D[n-1])
+        return string
