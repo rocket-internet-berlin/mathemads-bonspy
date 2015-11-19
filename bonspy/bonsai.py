@@ -129,6 +129,8 @@ class BonsaiTree(nx.DiGraph):
 
         elif type_ == 'membership':
             value = tuple(value)
+            if isinstance(value[0], str):
+                value = '(\"{}\")'.format('\",\"'.join(value))
             out = '{indent}{conditional} {feature} in {value}:\n'.format(indent=indent,
                                                                          conditional=conditional,
                                                                          feature=feature,
