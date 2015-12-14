@@ -5,6 +5,8 @@ from __future__ import (
     absolute_import, unicode_literals
 )
 
+from collections import deque
+
 import networkx as nx
 
 
@@ -36,12 +38,12 @@ class BonsaiTree(nx.DiGraph):
 
     def _assign_indent(self):
         root = self._get_root()
-        queue = [root]
+        queue = deque([root])
 
         self.node[root]['indent'] = ''
 
         while len(queue) > 0:
-            node = queue.pop(0)
+            node = queue.popleft()
             indent = self.node[node]['indent']
 
             next_nodes = self.successors(node)
@@ -49,14 +51,14 @@ class BonsaiTree(nx.DiGraph):
             nx.set_node_attributes(subgraph, 'indent', indent+'\t')
             next_nodes = sorted(next_nodes, key=lambda x: self.node[x].get('is_default_leaf', False))
 
-            queue += next_nodes
+            queue.extend(next_nodes)
 
     def _assign_condition(self):
         root = self._get_root()
-        queue = [root]
+        queue = deque([root])
 
         while len(queue) > 0:
-            node = queue.pop(0)
+            node = queue.popleft()
 
             next_nodes = self.successors(node)
             next_nodes = sorted(next_nodes, key=lambda x: self.node[x].get('is_default_leaf', False))
@@ -71,7 +73,7 @@ class BonsaiTree(nx.DiGraph):
 
                 self.node[n]['condition'] = condition
 
-            queue += next_nodes
+            queue.extend(next_nodes)
 
     def _get_sorted_out_edges(self, node):
         edges = self.out_edges(node)
@@ -153,13 +155,13 @@ class BonsaiTree(nx.DiGraph):
 
     def _tree_to_bonsai(self):
         root = self._get_root()
-        stack = self._get_sorted_out_edges(root)
+        stack = deque(self._get_sorted_out_edges(root))
 
         while len(stack) > 0:
-            parent, child = stack.pop(0)
+            parent, child = stack.popleft()
 
             next_edges = self._get_sorted_out_edges(child)
-            stack = next_edges + stack
+            stack.extendleft(next_edges[::-1])  # extendleft reverses order!
 
             if not self.node[child].get('is_default_leaf'):
                 conditional_text = self._get_conditional_text(parent, child)
