@@ -164,9 +164,9 @@ class BonsaiTree(nx.DiGraph):
             next_edges = self._get_sorted_out_edges(child)
             stack.extendleft(next_edges[::-1])  # extendleft reverses order!
 
-            if not self.node[child].get('is_default_leaf'):
+            if not self.node[child].get('is_default_leaf', False):
                 conditional_text = self._get_conditional_text(parent, child)
-            elif self.node[child].get('is_default_leaf'):
+            elif self.node[child].get('is_default_leaf', False):
                 conditional_text = self._get_default_conditional_text(parent)
 
             out_text = self._get_output_text(child)
