@@ -47,8 +47,9 @@ class BonsaiTree(nx.DiGraph):
             indent = self.node[node]['indent']
 
             next_nodes = self.successors(node)
-            subgraph = self.subgraph(next_nodes)
-            nx.set_node_attributes(subgraph, 'indent', indent+'\t')
+            for node in next_nodes:
+                self.node[node]['indent'] = indent + '\t'
+
             next_nodes = sorted(next_nodes, key=lambda x: self.node[x].get('is_default_leaf', False))
 
             queue.extend(next_nodes)
