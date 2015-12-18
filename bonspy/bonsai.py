@@ -62,7 +62,7 @@ class BonsaiTree(nx.DiGraph):
             node = queue.popleft()
 
             next_nodes = self.successors(node)
-            next_nodes = sorted(next_nodes, key=lambda x: self.node[x].get('is_default_leaf', False))
+            next_nodes = sorted(next_nodes, key=lambda x: (self.node[x].get('is_default_leaf', False), x))
 
             for n_i, n in enumerate(next_nodes):
                 if n_i == 0:
