@@ -104,7 +104,7 @@ class BonsaiTree(nx.DiGraph):
         if type_ == 'range':
             left_bound, right_bound = value
             try:
-                left_bound = int(left_bound)
+                left_bound = max(int(left_bound), 0)
             except TypeError:
                 pass
             try:
