@@ -185,14 +185,23 @@ class BonsaiTree(nx.DiGraph):
                                                                          feature=feature,
                                                                          value=value)
         elif type_ == 'assignment':
-            comparison = ' ' if feature in ['segment'] else '='
+            comparison = '='
             value = '"{}"'.format(value) if not self._is_numerical(value) else value
 
-            out = '{indent}{conditional} {feature}{comparison}{value}:\n'.format(indent=indent,
-                                                                                 conditional=conditional,
-                                                                                 feature=feature,
-                                                                                 comparison=comparison,
-                                                                                 value=value)
+            if feature not in ['segment']:
+                out = '{indent}{conditional} {feature}{comparison}{value}:\n'.format(
+                    indent=indent,
+                    conditional=conditional,
+                    feature=feature,
+                    comparison=comparison,
+                    value=value)
+            else:
+                out = '{indent}{conditional} {feature}[{value}]:\n'.format(
+                    indent=indent,
+                    conditional=conditional,
+                    feature=feature,
+                    value=value
+                )
 
         return pre_out + out
 
