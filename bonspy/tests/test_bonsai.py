@@ -45,3 +45,17 @@ def test_compound_feature_presence(graph):
     for row in text:
         if 'segment' in row and 'age' not in row:
             assert 'segment[12345]' in row or 'segment[67890]' in row
+
+
+def test_two_range_features(graph_two_range_features):
+    tree = BonsaiTree(graph_two_range_features)
+
+    switch_nodes = [n for n, d in tree.nodes_iter(data=True) if d.get('switch_header')]
+
+    for node in switch_nodes:
+        parent = tree.predecessors(node)[0]
+
+        header_indent = tree.node[node]['switch_header'].count('\t')
+        parent_indent = tree.node[parent]['indent'].count('\t')
+
+        assert header_indent - 1 == parent_indent

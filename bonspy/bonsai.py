@@ -80,6 +80,7 @@ class BonsaiTree(nx.DiGraph):
     def _handle_switch_statements(self):
         self._assign_switch_headers()
         self._adapt_switch_indentation()
+        self._adapt_switch_header_indentation()
 
     def _assign_switch_headers(self):
         root = self._get_root()
@@ -94,14 +95,12 @@ class BonsaiTree(nx.DiGraph):
             type_ = self.edge[parent][child].get('type')
 
             if type_ == 'range':
-                parent_indent = self.node[parent]['indent']
                 feature = self.node[parent].get('split')
 
                 if feature == 'age':
                     feature = 'segment[{}].age'.format(self.node[parent]['state']['segment'])
 
-                header_indent = parent_indent
-                header = header_indent + 'switch {}:'.format(feature)
+                header = 'switch {}:'.format(feature)  # appropriate indentation added later
 
                 self.node[parent]['switch_header'] = header
 
@@ -115,6 +114,14 @@ class BonsaiTree(nx.DiGraph):
             stack.extendleft(next_nodes[::-1])  # extendleft reverses order!
 
             self.node[node]['indent'] += '\t'
+
+    def _adapt_switch_header_indentation(self):
+        for node, data in self.nodes_iter(data=True):
+            if data.get('switch_header'):
+                parent = self.predecessors(node)[0]
+                parent_indent = self.node[parent]['indent']
+                switch_header = self.node[node]['switch_header']
+                self.node[node]['switch_header'] = parent_indent + '\t' + switch_header
 
     def _get_sorted_out_edges(self, node):
         edges = self.out_edges_iter(node)
