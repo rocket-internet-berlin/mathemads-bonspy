@@ -59,3 +59,51 @@ def test_two_range_features(graph_two_range_features):
         parent_indent = tree.node[parent]['indent'].count('\t')
 
         assert header_indent - 1 == parent_indent
+
+
+def test_feature_validation(graph_two_range_features):
+    tree = BonsaiTree(graph_two_range_features)
+
+    for node, data in tree.nodes_iter(data=True):
+        try:
+            lower, upper = data['state']['age']
+
+            assert lower >= 0
+            assert isinstance(lower, int)
+            assert isinstance(upper, int)
+        except KeyError:
+            pass
+
+    for node, data in tree.nodes_iter(data=True):
+        try:
+            lower, upper = data['state']['user_hour']
+
+            assert lower >= 0
+            assert upper <= 23
+            assert isinstance(lower, int)
+            assert isinstance(upper, int)
+        except KeyError:
+            pass
+
+    for parent, _, data in tree.edges_iter(data=True):
+        if tree.node[parent]['split'] == 'age':
+            try:
+                lower, upper = data['value']
+
+                assert lower >= 0
+                assert isinstance(lower, int)
+                assert isinstance(upper, int)
+            except KeyError:
+                pass
+
+    for parent, _, data in tree.edges_iter(data=True):
+        if tree.node[parent]['split'] == 'user_hour':
+            try:
+                lower, upper = data['value']
+
+                assert lower >= 0
+                assert upper <= 23
+                assert isinstance(lower, int)
+                assert isinstance(upper, int)
+            except KeyError:
+                pass

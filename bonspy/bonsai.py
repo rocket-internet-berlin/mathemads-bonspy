@@ -9,6 +9,8 @@ from collections import deque
 
 import networkx as nx
 
+from bonspy.features import get_validated
+
 
 class BonsaiTree(nx.DiGraph):
     """
@@ -25,12 +27,31 @@ class BonsaiTree(nx.DiGraph):
     def __init__(self, graph=None):
         if graph is not None:
             super(BonsaiTree, self).__init__(graph)
+            self._validate_feature_values()
             self._assign_indent()
             self._assign_condition()
             self._handle_switch_statements()
             self.bonsai = ''.join(self._tree_to_bonsai())
         else:
             super(BonsaiTree, self).__init__()
+
+    def _validate_feature_values(self):
+        self._validate_node_states()
+        self._validate_edge_values()
+
+    def _validate_node_states(self):
+        for node, data in self.nodes_iter(data=True):
+            for feature, value in data.get('state', {}).items():
+                self.node[node]['state'][feature] = get_validated(feature, value)
+
+    def _validate_edge_values(self):
+        for parent, child, data in self.edges_iter(data=True):
+            feature = self.node[parent]['split']
+            try:
+                value = data['value']
+                self.edge[parent][child]['value'] = get_validated(feature, value)
+            except KeyError:
+                pass  # edge has no value attribute, nothing to validate
 
     def _get_root(self):
         for node in self.nodes():

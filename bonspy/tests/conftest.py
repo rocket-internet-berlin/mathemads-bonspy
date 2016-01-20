@@ -98,25 +98,25 @@ def graph_two_range_features():
                       'user_hour': (0., 12.)})
     g.add_node(8, is_leaf=True, output=0.20,
                state={'segment': 12345, 'age': (0, 10.),
-                      'user_hour': (12., 23.)})
+                      'user_hour': (12., 100.)})
     g.add_node(9, is_leaf=True, output=0.10,
                state={'segment': 12345, 'age': (10., 20.),
                       'user_hour': (0., 12.)})
     g.add_node(10, is_leaf=True, output=0.20,
                state={'segment': 12345, 'age': (10., 20.),
-                      'user_hour': (12., 23.)})
+                      'user_hour': (12., 100.)})
     g.add_node(11, is_leaf=True, output=0.10,
                state={'segment': 67890, 'age': (0., 20.),
                       'user_hour': (0., 12.)})
     g.add_node(12, is_leaf=True, output=0.20,
                state={'segment': 67890, 'age': (0., 20.),
-                      'user_hour': (12., 23.)})
+                      'user_hour': (12., 100.)})
     g.add_node(13, is_leaf=True, output=0.10,
                state={'segment': 67890, 'age': (20., 40.),
                       'user_hour': (0., 12.)})
     g.add_node(14, is_leaf=True, output=0.20,
                state={'segment': 67890, 'age': (20., 40.),
-                      'user_hour': (12., 23.)})
+                      'user_hour': (12., 100.)})
     g.add_node(15, is_default_leaf=True, output=0.05, state={})
     g.add_node(16, is_default_leaf=True, output=0.05, state={'segment': 12345})
     g.add_node(17, is_default_leaf=True, output=0.05, state={'segment': 67890})
@@ -136,13 +136,13 @@ def graph_two_range_features():
     g.add_edge(2, 5, value=(0., 20.), type='range')
     g.add_edge(2, 6, value=(20., 40.), type='range')
     g.add_edge(3, 7, value=(0., 12.), type='range')
-    g.add_edge(3, 8, value=(12., 23.), type='range')
+    g.add_edge(3, 8, value=(12., 100.), type='range')
     g.add_edge(4, 9, value=(0., 12.), type='range')
-    g.add_edge(4, 10, value=(12., 23.), type='range')
+    g.add_edge(4, 10, value=(12., 100.), type='range')
     g.add_edge(5, 11, value=(0., 12.), type='range')
-    g.add_edge(5, 12, value=(12., 23.), type='range')
+    g.add_edge(5, 12, value=(12., 100.), type='range')
     g.add_edge(6, 13, value=(0., 12.), type='range')
-    g.add_edge(6, 14, value=(12., 23.), type='range')
+    g.add_edge(6, 14, value=(12., 100.), type='range')
     g.add_edge(0, 15)
     g.add_edge(1, 16)
     g.add_edge(2, 17)
