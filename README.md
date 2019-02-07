@@ -19,62 +19,40 @@ However, the examples below have been tested successfully in Python 2.7.
 ## Example: NetworkX tree to Bonsai output
 
     import networkx as nx
-
     from bonspy import BonsaiTree
+    import numpy as np
     
     
-    g = nx.DiGraph()
+    def generateBucketAPBtree(segmentID, bids, header=''):
+        g2 = nx.DiGraph()
     
-    g.add_node(0,  split='segment', state={})
-    g.add_node(1,  split='age', state={'segment': 12345})
-    g.add_node(2,  split='age', state={'segment': 67890})
-    g.add_node(3,  split='geo', state={'segment': 12345, 'age': (None, 10.)})
-    g.add_node(4,  split='geo', state={'segment': 12345, 'age': (10., None)})
-    g.add_node(5,  split='geo', state={'segment': 67890, 'age': (None, 10.)})
-    g.add_node(6,  split='geo', state={'segment': 67890, 'age': (10., None)})
-    g.add_node(7,  is_leaf=True, output=0.10, state={'segment': 12345, 'age': (None, 10.), 'geo': ('UK', 'DE')})
-    g.add_node(8,  is_leaf=True, output=0.20, state={'segment': 12345, 'age': (None, 10.), 'geo': ('US', 'BR')})
-    g.add_node(9,  is_leaf=True, output=0.10, state={'segment': 12345, 'age': (10., None), 'geo': ('UK', 'DE')})
-    g.add_node(10, is_leaf=True, output=0.20, state={'segment': 12345, 'age': (10., None), 'geo': ('US', 'BR')})
-    g.add_node(11, is_leaf=True, output=0.10, state={'segment': 67890, 'age': (None, 10.), 'geo': ('UK', 'DE')})
-    g.add_node(12, is_leaf=True, output=0.20, state={'segment': 67890, 'age': (None, 10.), 'geo': ('US', 'BR')})
-    g.add_node(13, is_leaf=True, output=0.10, state={'segment': 67890, 'age': (10., None), 'geo': ('UK', 'DE')})
-    g.add_node(14, is_leaf=True, output=0.20, state={'segment': 67890, 'age': (10., None), 'geo': ('US', 'BR')})
-    g.add_node(15, is_default_leaf=True, output=0.05, state={})
-    g.add_node(16, is_default_leaf=True, output=0.05, state={'segment': 12345})
-    g.add_node(17, is_default_leaf=True, output=0.05, state={'segment': 67890})
-    g.add_node(18, is_default_leaf=True, output=0.05, state={'segment': 12345, 'age': (None, 10.)})
-    g.add_node(19, is_default_leaf=True, output=0.05, state={'segment': 12345, 'age': (10., None)})
-    g.add_node(20, is_default_leaf=True, output=0.05, state={'segment': 67890, 'age': (None, 10.)})
-    g.add_node(21, is_default_leaf=True, output=0.05, state={'segment': 67890, 'age': (10., None)})
+        nLeafs = len(bids)
     
-    g.add_edge(0, 1, value=12345, type='assignment')
-    g.add_edge(0, 2, value=67890, type='assignment')
-    g.add_edge(1, 3, value=(None, 10.), type='range')
-    g.add_edge(1, 4, value=(10., None), type='range')
-    g.add_edge(2, 5, value=(None, 10.), type='range')
-    g.add_edge(2, 6, value=(10., None), type='range')
-    g.add_edge(3, 7, value=('UK', 'DE'), type='membership')
-    g.add_edge(3, 8, value=('US', 'BR'), type='membership')
-    g.add_edge(4, 9, value=('UK', 'DE'), type='membership')
-    g.add_edge(4, 10, value=('US', 'BR'), type='membership')
-    g.add_edge(5, 11, value=('UK', 'DE'), type='membership')
-    g.add_edge(5, 12, value=('US', 'BR'), type='membership')
-    g.add_edge(6, 13, value=('UK', 'DE'), type='membership')
-    g.add_edge(6, 14, value=('US', 'BR'), type='membership')
-    g.add_edge(0, 15)
-    g.add_edge(1, 16)
-    g.add_edge(2, 17)
-    g.add_edge(3, 18)
-    g.add_edge(4, 19)
-    g.add_edge(5, 20)
-    g.add_edge(6, 21)
+        g2.add_node(0, split='segment.value', state={'segment': segmentID})
     
-    tree = BonsaiTree(g)
+        for i in range(nLeafs):
+            g2.add_node(i + 1, is_leaf=True, is_smart=True, leaf_name=str(nLeafs - i), value=float(bids[i]),
+                        state={'segment': segmentID})
+            g2.add_edge(0, i + 1, value=(nLeafs - i, None), type='range')
+    
+        g2.add_node(nLeafs + 1, is_leaf=True, is_smart=True, is_default_leaf=True, value=0, state={'segment': segmentID})
+        g2.add_edge(0, nLeafs + 1, type='assignment')
+    
+        tree2 = BonsaiTree(g2)
+    
+        theTreeWithHeader = header + tree2.bonsai
+    
+        return theTreeWithHeader
+    
+    
+    segmentID = 199
+    bids = np.array([0, 0, 0, 1, 2, 3, 4, 0, 0])
+    header = '''#Gererated by some optimiser
+    #rna: no')'''
+    
+    theTree = generateBucketAPBtree(segmentID, bids, header)
+    print(theTree)
 
-This `tree` looks as follows:
-
-![tree_example](https://cloud.githubusercontent.com/assets/3273502/10993831/4cf94712-8472-11e5-8256-4f736814d7eb.png)
 
 Note that non-leaf nodes track the next user variable to be split on in their `split` attribute while
 the current choice of user features is tracked in their `state` attribute.
@@ -86,180 +64,303 @@ The Bonsai text representation of the above `tree` is stored in its `.bonsai` at
     
 prints out
 
-    if segment 12345:
-        if segment 12345 age <= 10:
-            if geo in ('US', 'BR'):
-                0.2000
-            elif geo in ('UK', 'DE'):
-                0.1000
-            else:
-                0.0500
-        elif segment 12345 age > 10:
-            if geo in ('UK', 'DE'):
-                0.1000
-            elif geo in ('US', 'BR'):
-                0.2000
-            else:
-                0.0500
-        else:
-            0.0500
-    elif segment 67890:
-        if segment 67890 age <= 10:
-            if geo in ('US', 'BR'):
-                0.2000
-            elif geo in ('UK', 'DE'):
-                0.1000
-            else:
-                0.0500
-        elif segment 67890 age > 10:
-            if geo in ('UK', 'DE'):
-                0.1000
-            elif geo in ('US', 'BR'):
-                0.2000
-            else:
-                0.0500
-        else:
-            0.0500
+    #Gererated by some optimiser
+    #rna: no')
+    if segment[199].value >= 9:
+        leaf_name: "9"
+        value: no_bid
+    elif segment[199].value >= 8:
+        leaf_name: "8"
+        value: no_bid
+    elif segment[199].value >= 7:
+        leaf_name: "7"
+        value: no_bid
+    elif segment[199].value >= 6:
+        leaf_name: "6"
+        value: 1.0000
+    elif segment[199].value >= 5:
+        leaf_name: "5"
+        value: 2.0000
+    elif segment[199].value >= 4:
+        leaf_name: "4"
+        value: 3.0000
+    elif segment[199].value >= 3:
+        leaf_name: "3"
+        value: 4.0000
+    elif segment[199].value >= 2:
+        leaf_name: "2"
+        value: no_bid
+    elif segment[199].value >= 1:
+        leaf_name: "1"
+        value: no_bid
     else:
-        0.0500
+        value: no_bid
 
-## Example: Sklearn logistic regression classifier to Bonsai output
+## Other example: 
 
-    from bonspy import LogisticConverter
-    from bonspy import BonsaiTree
-
-    features = ['segment', 'age', 'geo']
-
-    vocabulary = {
-        'segment=12345': 0,
-        'segment=67890': 1,
-        'age=0': 2,
-        'age=1': 3,
-        'geo=UK': 4,
-        'geo=DE': 5,
-        'geo=US': 6,
-        'geo=BR': 7
+    nodeMap = {}
+    def getNodeID(C, A, R):
+        key = str(C) + str(A) + str(R)
+    
+        if key not in nodeMap.keys():
+            node = len(nodeMap)
+            nodeMap.update({key: node})
+    
+        return nodeMap[key]
+    
+    
+    def generateSR_APBtree(segmentIDs, ages, header=''):
+        g2 = nx.DiGraph()
+    
+        nSegments = len(segmentIDs)
+        nAges = len(ages)
+    
+        g2.add_node(getNodeID(0, 0, 0), split='segment', state={})
+    
+        for iSeg in range(nSegments):
+            g2.add_node(getNodeID(iSeg + 1, 0, 0), split='segment.age', state={'segment': segmentIDs[iSeg]})
+            g2.add_edge(getNodeID(0, 0, 0), getNodeID(iSeg + 1, 0, 0), value=segmentIDs[iSeg], type='assignment')
+            for iAge in range(nAges):
+                g2.add_node(getNodeID(iSeg + 1, iAge + 1, 0), is_leaf=True, is_smart=True, leaf_name=str(iAge), value=iAge,
+                            state={'segment': segmentIDs[iSeg], 'segment.age': ages[iAge]})
+                g2.add_edge(getNodeID(iSeg + 1, 0, 0), getNodeID(iSeg + 1, iAge + 1, 0), value=(iAge, None), type='range',
+                            join_statement=True, is_negated=True)
+    
+            g2.add_node(getNodeID(iSeg + 1, nAges, 0), is_leaf=True, is_smart=True, is_default_leaf=True, value=1,
+                        state={'segment': segmentID})
+            g2.add_edge(getNodeID(iSeg + 1, 0, 0), getNodeID(iSeg + 1, nAges, 0), type='assignment')
+    
+        tree2 = BonsaiTree(g2)
+    
+        theTreeWithHeader = header + tree2.bonsai
+    
+        return theTreeWithHeader
+    
+    
+    features = {
+        'age': [10, 15, 30, 60, 180],
+        'recency': [10, 30, 60],
+        'geo': ['FR, UK, UA']
     }
-
-    weights = [.1, .2, .15, .25, .1, .1, .2, .2]
-    intercept = .4
-
-    buckets = {
-        'age': {
-            '0': (None, 10),
-            '1': (10, None)
-        }
-    }
-
-    types = {
-        'segment': 'assignment',
-        'age': 'range',
-        'geo': 'assignment'
-    }
-
-    conv = LogisticConverter(features=features, vocabulary=vocabulary,
-                             weights=weights, intercept=intercept,
-                             types=types, base_bid=2., buckets=buckets)
-
-    tree = BonsaiTree(conv.graph)
-
-    print(tree.bonsai)
+    
+    segmentIDs = [10898030, 10898031, 10898032]
+    ages = [10, 15, 30, 60, 180]
+    header = '''#Gererated by some optimiser
+    #rna: no\n'''
+    
+    theTree = generateSR_APBtree(segmentIDs, ages, header=header)
+    print(theTree)
 
 Prints out
 
-    if segment 67890:
-        if segment 67890 age > 10:
-            if geo="US":
-                1.4815
-            elif geo="UK":
-                1.4422
-            elif geo="BR":
-                1.4815
-            elif geo="DE":
-                1.4422
-            else:
-                1.4011
-        elif segment 67890 age <= 10:
-            if geo="US":
-                1.4422
-            elif geo="UK":
-                1.4011
-            elif geo="BR":
-                1.4422
-            elif geo="DE":
-                1.4011
-            else:
-                1.3584
+    #Gererated by some optimiser
+    #rna: no
+    if segment[10898030]:
+    
+        if not every segment[10898030].age >= 0:
+            leaf_name: "0"
+            value: no_bid
+        elif not every segment[10898030].age >= 1:
+            leaf_name: "1"
+            value: 1.0000
+        elif not every segment[10898030].age >= 2:
+            leaf_name: "2"
+            value: 2.0000
+        elif not every segment[10898030].age >= 3:
+            leaf_name: "3"
+            value: 3.0000
         else:
-            1.2913
-    elif segment 12345:
-        if segment 12345 age > 10:
-            if geo="US":
-                1.4422
-            elif geo="DE":
-                1.4011
-            elif geo="UK":
-                1.4011
-            elif geo="BR":
-                1.4422
-            else:
-                1.3584
-        elif segment 12345 age <= 10:
-            if geo="US":
-                1.4011
-            elif geo="DE":
-                1.3584
-            elif geo="UK":
-                1.3584
-            elif geo="BR":
-                1.4011
+            leaf_name: "4"
+            value: 1.0000
+    elif segment[10898031]:
+    
+        if not every segment[10898031].age >= 0:
+            leaf_name: "0"
+            value: no_bid
+        elif not every segment[10898031].age >= 1:
+            leaf_name: "1"
+            value: 1.0000
+        elif not every segment[10898031].age >= 2:
+            leaf_name: "2"
+            value: 2.0000
+        elif not every segment[10898031].age >= 3:
+            leaf_name: "3"
+            value: 3.0000
+        else:
+            leaf_name: "4"
+            value: 1.0000
+    else segment[10898032]:
+    
+        if not every segment[10898032].age >= 0:
+            leaf_name: "0"
+            value: no_bid
+        elif not every segment[10898032].age >= 1:
+            leaf_name: "1"
+            value: 1.0000
+        elif not every segment[10898032].age >= 2:
+            leaf_name: "2"
+            value: 2.0000
+        elif not every segment[10898032].age >= 3:
+            leaf_name: "3"
+            value: 3.0000
+        else:
+            leaf_name: "4"
+            value: 1.0000
+            
+For trees with arbitraty number of features:
+
+    def test():
+        from bonspy import LogisticConverter
+        from bonspy import BonsaiTree
+    
+        features = ['segment', 'segment.age', 'campaign', 'campaign.recency']
+    
+        vocabulary = {
+            'segment=10898030': 0,
+            'segment=10898031': 1,
+            'segment.age=0': 2,
+            'segment.age=1': 3,
+            'segment.age=2': 4,
+            'segment.age=3': 5,
+            'campaign=25198998': 6,
+            'campaign.recency=10': 7,
+            'campaign.recency=20': 8
+        }
+    
+        weights = [.1, .2, .15, .25, .1, .1, .2, .2, .2, .2]
+        intercept = .4
+    
+        buckets = {
+            'segment.age': {
+                '0': (None, 10),
+                '1': (None, 15),
+                '2': (None, 30),
+                '3': (None, 60)
+            }
+        }
+    
+        types = {
+            'segment': 'assignment',
+            'segment.age': 'range',
+            'campaign': 'assignment',
+            'campaign.recency': 'assignment'
+        }
+    
+        conv = LogisticConverter(features=features, vocabulary=vocabulary,
+                                 weights=weights, intercept=intercept,
+                                 types=types, base_bid=2., buckets=buckets)
+    
+        tree = BonsaiTree(conv.graph)
+    
+        print(tree.bonsai)
+    
+    test()
+    
+Prints out
+
+    if segment[10898030]:
+    
+        if segment[10898030].age <= 10:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4011
             else:
                 1.3140
+        elif segment[10898030].age <= 15:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4422
+            else:
+                1.3584
+        elif segment[10898030].age <= 30:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.3799
+            else:
+                1.2913
+        elif segment[10898030].age <= 60:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.3799
+            else:
+                1.2913
         else:
             1.2449
+    elif segment[10898031]:
+    
+        if segment[10898031].age <= 10:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4422
+            else:
+                1.3584
+        elif segment[10898031].age <= 15:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4815
+            else:
+                1.4011
+        elif segment[10898031].age <= 30:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4219
+            else:
+                1.3364
+        elif segment[10898031].age <= 60:
+            if campaign[25198998]:
+                if campaign[25198998].recency=10:
+                    leaf_name: "blah"
+                    value: 2.0000
+                elif campaign[25198998].recency=20:
+                    leaf_name: "blah"
+                    value: 2.0000
+                else:
+                    1.4219
+            else:
+                1.3364
+        else:
+            1.2913
     else:
         1.1974
-
-## Example: Uploading the Bonsai output to AppNexus
-
-Base64-encode the tree:
-
-    import base64
-    encoded = base64.b64encode(tree.bonsai)
-
-Use our [`nexusadspy` library](https://github.com/mathemads/nexusadspy) to
-send the encoded `tree` to the AppNexus parser and check
-for any syntactical errors:
-
-    from nexusadspy import AppnexusClient
-    client = AppnexusClient('.appnexus_auth.json')
-
-    check_tree = {
-                   "custom-model-parser": {
-                        "model_text": encoded
-                        }
-                   }
-
-    r = client.request('custom-model-parser', 'POST', data=check_tree)
-
-If the AppNexus API does not return any errors for our `tree` we can now
-upload it as follows:
-
-    custom_model = {
-                    "custom_model": {
-                        "name": "Insert tree name (visible in the AppNexus advertiser UI)",
-                        "member_id":  # add your integer member ID,
-                        "advertiser_id": # add your integer advertiser ID,
-                        "custom_model_structure": "decision_tree",
-                        "model_output": "bid",
-                        "model_text": encoded
-                        }
-                    }
-
-    r = client.request('custom-model', 'POST', data=custom_model)
-
-Check the response `r` for the integer identifier assigned to your bidding tree by AppNexus.
-You will use this identifier to set the uploaded tree as bidder for your advertising
-campaigns in the AppNexus advertiser UI.
-
-For more details see https://wiki.appnexus.com/display/console/AppNexus+Programmable+Bidder.
